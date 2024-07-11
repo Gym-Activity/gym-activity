@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gym Activity Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    table {
+      margin-top: 20px;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    .edit-btn {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 12px;
+      margin: 2px 2px;
+      cursor: pointer;
+    }
+  </style>
+  <script>
+    // Function to save the entered data
+    function saveData(bodyPart) {
+      var currentDate = new Date().toLocaleDateString(); // Get the current date
+
+      // Get the values from the input fields
+      var reps = document.getElementById(bodyPart + "-reps").value;
+      var sets = document.getElementById(bodyPart + "-sets").value;
+      var volume = document.getElementById(bodyPart + "-volume").value;
+
+      // Create an object to store the data
+      var data = {
+        date: currentDate,
+        reps: reps,
+        sets: sets,
+        volume: volume
+      };
+
+      // Retrieve existing data from local storage
+      var existingData = localStorage.getItem(bodyPart + "Data");
+      var dataArray = existingData ? JSON.parse(existingData) : [];
+
+      // Add the new data to the array
+      dataArray.push(data);
+
+      // Save the updated data array to local storage
+      localStorage.setItem(bodyPart + "Data", JSON.stringify(dataArray));
+
+      // Display a success message
+      alert("Data for " + bodyPart + " saved successfully!");
+
+      // Clear input fields
+      document.getElementById(bodyPart + "-reps").value = "";
+      document.getElementById(bodyPart + "-sets").value = "";
+      document.getElementById(bodyPart + "-volume").value = "";
+
+      // Refresh the table
+      generateTable(bodyPart);
+    }
+
+    // Function to generate the table
+    function generateTable(bodyPart) {
+      var tableData = JSON.parse(localStorage.getItem(bodyPart + "Data"));
+
+      if (tableData && tableData.length > 0) {
+        var table = "<table>";
+        table += "<tr><th>Date</th><th>Reps</th><th>Sets</th><th>Volume (kg)</th><th>Action</th></tr>";
+
+        for (var i = 0; i < tableData.length; i++) {
+          table += "<tr>";
+          table += "<td>" + tableData[i].date + "</td>";
+          table += "<td>" + tableData[i].reps + "</td>";
+          table += "<td>" + tableData[i].sets + "</td>";
+          table += "<td>" + tableData[i].volume + "</td>";
+          table += "<td><button class='edit-btn' onclick='editData(\"" + bodyPart + "\", " + i + ")'>Edit</button></td>";
+          table += "</tr>";
+        }
+
+        table += "</table>";
+
+        document.getElementById(bodyPart + "-table").innerHTML = table;
+      } else {
+        document.getElementById(bodyPart + "-table").innerHTML = "No data available.";
+      }
+    }
+
+    // Function to edit the data
+    function editData(bodyPart, index) {
+      var tableData = JSON.parse(localStorage.getItem(bodyPart + "Data"));
+      var data = tableData[index];
+
+      // Update the input fields with the existing data
+      document.getElementById(bodyPart + "-reps").value = data.reps;
+      document.getElementById(bodyPart + "-sets").value = data.sets;
+      document.getElementById(bodyPart + "-volume").value = data.volume;
+
+      // Remove the edited data from the array
+      tableData.splice(index, 1);
+
+      // Save the updated data array to local storage
+      localStorage.setItem(bodyPart + "Data", JSON.stringify(tableData));
+
+      // Refresh the table
+      generateTable(bodyPart);
+    }
+  </script>
+</head>
+<body>
+  <h1>Gym Activity Tracker</h1>
+
+  <div class="part-heading">
+    <h2>Upper Body</h2>
+  </div>
+
+  <div class="muscle-group">
+    <h3 class="activity-heading">Chest:</h3>
+    <div>
+      <label for="bench-press">Bench Press - Reps:</label>
+      <input type="number" id="bench-press-reps" name="bench-press-reps" min="0" max="30">
+      <label for="bench-press-sets">Sets:</label>
+      <input type="number" id="bench-press-sets" name="bench-press-sets" min="0" max="10">
+      <label for="bench-press-volume">Volume (kg):</label>
+      <input type="number" id="bench-press-volume" name="bench-press-volume">
+    </div>
+    <button onclick="saveData('bench-press')">Save Bench Press Data</button>
+    
+    <div>
+      <label for="Inclined-bench-press">Inclined Bench Press - Reps:</label>
+      <input type="number" id="Inclined-bench-press-reps" name="Inclined-bench-press-reps" min="0" max="30">
+      <label for="Inclined-bench-press-sets">Sets:</label>
+      <input type="number" id="Inclined-bench-press-sets" name="Inclined-bench-press-sets" min="0" max="10">
+      <label for="Inclined-bench-press-volume">Volume (kg):</label>
+      <input type="number" id="Inclined-bench-press-volume" name="Inclined-bench-press-volume">
+    </div>
+    <button onclick="saveData('Inclined-bench-press')">Save Inclined Bench Press Data</button>
+  </div>
+
+  <div class="muscle-group">
+    <h3 class="activity-heading">Shoulder:</h3>
+    <div>
+      <label for="lateral-raise">Lateral Raise - Reps:</label>
+      <input type="number" id="lateral-raise-reps" name="lateral-raise-reps" min="0" max="30">
+      <label for="lateral-raise-sets">Sets:</label>
+      <input type="number" id="lateral-raise-sets" name="lateral-raise-sets" min="0" max="10">
+      <label for="lateral-raise-volume">Volume (kg):</label>
+      <input type="number" id="lateral-raise-volume" name="lateral-raise-volume">
+    </div>
+    <button onclick="saveData('lateral-raise')">Save Lateral Raise Data</button>
+  </div>
+
+  <div class="muscle-group">
+    <h3 class="activity-heading">Back:</h3>
+    <div>
+      <label for="lat-pulldown">Lat Pulldown - Reps:</label>
+      <input type="number" id="lat-pulldown-reps" name="lat-pulldown-reps" min="0" max="30">
+      <label for="lat-pulldown-sets">Sets:</label>
+      <input type="number" id="lat-pulldown-sets" name="lat-pulldown-sets" min="0" max="10">
+      <label for="lat-pulldown-volume">Volume (kg):</label>
+      <input type="number" id="lat-pulldown-volume" name="lat-pulldown-volume">
+    </div>
+    <button onclick="saveData('lat-pulldown')">Save Lat Pulldown Data</button>
+
+    <div>
+      <label for="pull-up">Pull-up - Reps:</label>
+      <input type="number" id="pull-up-reps" name="pull-up-reps" min="0" max="30">
+      <label for="pull-up-sets">Sets:</label>
+      <input type="number" id="pull-up-sets" name="pull-up-sets" min="0" max="10">
+      <label for="pull-up-volume">Volume (kg):</label>
+      <input type="number" id="pull-up-volume" name="pull-up-volume">
+    </div>
+    <button onclick="saveData('pull-up')">Save Pull-up Data</button>
+  </div>
+
+  <div class="part-heading">
+    <h2>Lower Body</h2>
+  </div>
+
+  <div class="muscle-group">
+    <h3 class="activity-heading">Quads:</h3>
+    <div>
+      <label for="squat">Squat - Reps:</label>
+      <input type="number" id="squat-reps" name="squat-reps" min="0" max="30">
+      <label for="squat-sets">Sets:</label>
+      <input type="number" id="squat-sets" name="squat-sets" min="0" max="10">
+      <label for="squat-volume">Volume (kg):</label>
+      <input type="number" id="squat-volume" name="squat-volume">
+    </div>
+    <button onclick="saveData('squat')">Save Squat Data</button>
+
+    <div>
+      <label for="Lunge">Lunge - Reps:</label>
+      <input type="number" id="Lunge-reps" name="Lunge-reps" min="0" max="30">
+      <label for="Lunge-sets">Sets:</label>
+      <input type="number" id="Lunge-sets" name="Lunge-sets" min="0" max="10"> 
+      <label for="Lunge-volume">Volume (kg):</label> 
+      <input type="number" id="Lunge-volume" name="Lunge-volume">
+    </div>
+    <button onclick="saveData('Lunge')">Save Lunge Data</button>
+           
+    <div>
+     <label for="RDL">RDL - Reps:</label>
+     <input type="number" id="RDL-reps" name="RDL-reps" min="0" max="30">
+     <label for="RDL-sets">Sets:</label> 
+     <input type="number" id="RDL-sets" name="RDL-sets" min="0" max="10">
+     <label for="RDL-volume">Volume (kg):</label> 
+     <input type="number" id="RDL-volume" name="RDL-volume">
+   </div>
+   <button onclick="saveData('RDL')">Save RDL Data</button>
+   
+   <div>
+     <label for="S.L.RDL">S.L.RDL - Reps:</label>
+     <input type="number" id="S.L.RDL-reps" name="S.L.RDL-reps" min="0" max="30">
+     <label for="S.L.RDL-sets">Sets:</label>
+     <input type="number" id="S.L.RDL-sets" name="S.L.RDL-sets" min="0" max="10">
+     <label for="S.L.RDL-volume">Volume (kg):</label>
+     <input type="number" id="S.L.RDL-volume" name="S.L.RDL-volume">
+    </div>
+    <button onclick="saveData('S.L.RDL')">Save S.L.RDL Data</button>
+  </div>
+
+  <h2>Stored Data</h2>
+
+  <div id="bench-press-table"></div>
+  <div id="Inclined-bench-press-table"></div>
+  <div id="lateral-raise-table"></div>
+  <div id="lat-pulldown-table"></div>
+  <div id="pull-up-table"></div>
+  <div id="squat-table"></div>
+  <div id="Lunge-table"></div>
+  <div id="RDL-table"></div>
+  <div id="S.L.RDL-table"></div>
+
+  <script>
+    generateTable('bench-press');
+    generateTable('Inclined-bench-press');
+    generateTable('lateral-raise');
+    generateTable('lat-pulldown');
+    generateTable('pull-up');
+    generateTable('squat');
+    generateTable('Lunge');
+    generateTable('RDL');
+    generateTable('S.L.RDL');
+  </script>
+</body>
+</html>
